@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bua Keo Bao AI - Web</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <canvas id="stars-bg"></canvas>
+  <div class="page-shell">
+    <header class="cyber-header">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <div class="brand-cyber">
+        <div class="badge-cyber">AI</div>
+        <div>
+          <h1 class="cyber-title">Bua Keo Bao</h1>
+          <p class="subtitle">Camera hand tracking powered by MediaPipe</p>
+        </div>
+      </div>
+      <div class="user-info-cyber" id="user-info">
+        <span class="user-name" id="user-name">Đang tải...</span>
+        <span class="user-stats" id="user-stats"></span>
+        <button id="auth-btn" class="btn-cyber btn-logout" style="display: none;">Đăng nhập</button>
+        <button id="logout-btn" class="btn-cyber btn-logout" style="display: none;">Đăng xuất</button>
+      </div>
+      <div class="controls-cyber">
+        <button id="start-btn" class="btn-cyber btn-primary">Bắt đầu</button>
+        <button id="pause-btn" class="btn-cyber">Dừng</button>
+        <button id="reset-btn" class="btn-cyber">Làm lại</button>
+        <button id="clear-history-btn" class="btn-cyber">Xóa lịch sử</button>
+      </div>
+    </header>
+
+    <main class="cyber-layout">
+      <section class="cyber-panel panel-left">
+        <div class="corner-tl"></div>
+        <div class="corner-tr"></div>
+        <div class="corner-bl"></div>
+        <div class="corner-br"></div>
+
+        <div class="panel-header-cyber">
+          <div>
+            <p class="header-label">TRỰC TIẾP</p>
+            <h2 class="panel-title">Camera + Landmarks</h2>
+          </div>
+          <button id="round-btn" class="btn-cyber btn-play">Chơi Ngay</button>
+        </div>
+
+        <div class="video-container-cyber">
+          <div class="video-frame">
+            <div class="frame-corner tl"></div>
+            <div class="frame-corner tr"></div>
+            <div class="frame-corner bl"></div>
+            <div class="frame-corner br"></div>
+
+            <video id="input-video" autoplay playsinline muted></video>
+            <canvas id="output-canvas"></canvas>
+
+            <div class="status-cyber" id="gesture-chip">
+              <span>⚠</span>
+              <span>Không thấy tay</span>
+            </div>
+            <div class="countdown-cyber" id="countdown"></div>
+
+            <div class="tech-overlay">
+              <div class="scan-line"></div>
+              <div class="grid-overlay"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="legend-cyber">
+          <div class="legend-item">
+            <span class="led-dot cyan"></span>
+            <span>Nhận dạng đường chỉ tay</span>
+          </div>
+          <div class="legend-item">
+            <span class="led-dot purple"></span>
+            <span>Khung tham chiếu</span>
+          </div>
+        </div>
+
+        <div class="progress-bar-cyber">
+          <div class="progress-fill" style="width: 0%"></div>
+        </div>
+      </section>
+
+      <section class="cyber-panel panel-right">
+        <div class="corner-tl"></div>
+        <div class="corner-tr"></div>
+        <div class="corner-bl"></div>
+        <div class="corner-br"></div>
+
+        <div class="panel-header-cyber">
+          <p class="header-label">TRẬN ĐẤU</p>
+          <h2 class="panel-title">Trận đấu</h2>
+        </div>
+
+        <div class="scores-cyber">
+          <div class="score-box player">
+            <p class="score-header">Người chơi</p>
+            <p class="score-display" id="player-score">0</p>
+            <p class="score-gesture" id="player-gesture">-</p>
+          </div>
+          <div class="vs-divider">VS</div>
+          <div class="score-box computer">
+            <p class="score-header">Máy</p>
+            <p class="score-display" id="computer-score">0</p>
+            <p class="score-gesture" id="computer-gesture">-</p>
+          </div>
+        </div>
+
+        <div class="result-cyber" id="result-text">
+          <span class="result-icon">💡</span>
+          <span>Nhấn "Chơi ván" để bắt đầu</span>
+        </div>
+
+        <div class="history-cyber" id="history"></div>
+      </section>
+    </main>
+  </div>
+
+  <div id="celebration" class="celebration hidden">
+    <canvas id="fireworks"></canvas>
+    <div class="celebration-cyber">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+
+      <p class="celebration-label">CHÚC MỪNG</p>
+      <h2 id="celebration-title">Bạn chiến thắng!</h2>
+      <p id="celebration-sub">Chiến thắng 3 ván trước. Bấm để chơi lại.</p>
+      <button id="celebration-btn" class="btn-cyber btn-primary">Chơi lại</button>
+    </div>
+  </div>
+
+  <div id="gameover" class="gameover hidden">
+    <canvas id="gameover-effects"></canvas>
+    <div class="gameover-cyber">
+      <div class="corner-tl red"></div>
+      <div class="corner-tr red"></div>
+      <div class="corner-bl red"></div>
+      <div class="corner-br red"></div>
+
+      <div class="glitch-wrapper">
+        <p class="gameover-label">TRẬN ĐẤU KẾT THÚC</p>
+        <h2 id="gameover-title" class="glitch" data-text="GAME OVER">GAME OVER</h2>
+      </div>
+      <p id="gameover-sub">Máy đã chiến thắng 3 ván trước. Thử lại lần nữa!</p>
+      <button id="gameover-btn" class="btn-cyber btn-danger">Chơi lại</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+
+  <!-- Auth Modal -->
+  <div id="auth-modal" class="auth-modal hidden">
+    <div class="auth-overlay"></div>
+    <div class="auth-container cyber-panel">
+      <div class="corner-tl"></div>
+      <div class="corner-tr"></div>
+      <div class="corner-bl"></div>
+      <div class="corner-br"></div>
+      
+      <button class="auth-close" id="auth-close">&times;</button>
+      
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Đăng nhập</button>
+        <button class="auth-tab" data-tab="register">Đăng ký</button>
+      </div>
+      
+      <!-- Form Đăng nhập -->
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label for="login-username">Tên đăng nhập</label>
+          <input type="text" id="login-username" placeholder="Nhập tên đăng nhập" required>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Mật khẩu</label>
+          <input type="password" id="login-password" placeholder="Nhập mật khẩu" required>
+        </div>
+        <div class="auth-message" id="login-message"></div>
+        <button type="submit" class="btn-cyber btn-primary auth-submit">Đăng nhập</button>
+        <button type="button" class="btn-cyber btn-guest" id="guest-btn">Chơi với tư cách khách</button>
+      </form>
+      
+      <!-- Form Đăng ký -->
+      <form id="register-form" class="auth-form hidden">
+        <div class="form-group">
+          <label for="register-username">Tên đăng nhập</label>
+          <input type="text" id="register-username" placeholder="Nhập tên đăng nhập" required>
+        </div>
+        <div class="form-group">
+          <label for="register-displayname">Tên hiển thị</label>
+          <input type="text" id="register-displayname" placeholder="Nhập tên hiển thị (tùy chọn)">
+        </div>
+        <div class="form-group">
+          <label for="register-password">Mật khẩu</label>
+          <input type="password" id="register-password" placeholder="Nhập mật khẩu" required>
+        </div>
+        <div class="form-group">
+          <label for="register-password2">Xác nhận mật khẩu</label>
+          <input type="password" id="register-password2" placeholder="Nhập lại mật khẩu" required>
+        </div>
+        <div class="auth-message" id="register-message"></div>
+        <button type="submit" class="btn-cyber btn-primary auth-submit">Đăng ký</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="stars.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
